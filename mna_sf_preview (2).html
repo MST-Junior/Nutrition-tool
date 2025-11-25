@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แบบคัดกรองโภชนาการ MNA-SF</title>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .question { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    .question p { font-size: 20px; }
+    .question label { font-size: 20px; display: flex; align-items: center; padding: 6px 0; }
+    .question input[type="radio"] { width: 20px; height: 20px; margin-right: 10px; }
+
+    .result { margin-top: 20px; font-size: 1.2em; font-weight: bold; }
+    button { padding: 10px 20px; font-size: 1em; }
+
+    /* ปุ่มลอย */
+    #floatingBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0078ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 65px;
+      height: 65px;
+      font-size: 26px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    #result { display: flex; gap: 12px; white-space: nowrap; }
+
+    /* Modal */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 998;
+    }
+
+    #modalBox {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      margin: 80px auto;
+      border-radius: 12px;
+    }
+
+    #modalBox input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 18px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    #modalBox button {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .question label { padding: 10px 0; }
+      button {
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>แบบคัดกรองโภชนาการ (MNA-SF)</h1>
+
+  <!-- Modal เก็บข้อมูลเพิ่ม -->
+  <div id="modalOverlay">
+    <div id="modalBox">
+      <h2>ข้อมูลผู้ป่วย</h2>
+      <input type="text" id="patientName" placeholder="ชื่อ-สกุล">
+      <input type="text" id="patientHN" placeholder="HN">
+      <input type="text" id="patientWard" placeholder="Ward / OPD">
+      <button onclick="closeModal()">บันทึก</button>
+    </div>
+  </div>
+
+  <!-- ปุ่มลอย -->
+  <button id="floatingBtn" onclick="openModal()">✎</button>
+
+  <form id="mnaForm">
+    <div class="question">
+      <p><strong>1. ในช่วง 3 เดือนที่ผ่านมา:</strong> รับประทานอาหารได้น้อยลงเนื่องจากความอยากอาหารลดลง / ปัญหาการย่อย / เคี้ยว / กลืน หรือไม่</p>
+      <label><input type="radio" name="q1" value="0">รับประทานอาหารน้อยลงอย่างมาก (0 คะแนน)</label>
+      <label><input type="radio" name="q1" value="1">รับประทานอาหารน้อยลงปานกลาง (1 คะแนน)</label>
+      <label><input type="radio" name="q1" value="2">การรับประทานอาหารไม่เปลี่ยนแปลง (2 คะแนน)</label>
+    </div>
+
+    <div class="question">
+      <p><strong>2. น้ำหนักลดลงโดยไม่ได้ตั้งใจ ภายใน 3 เดือนที่ผ่านมา:</strong></p>
+      <label><input type="radio" name="q2" value="0">ลดมากกว่า 3 กก. (0 คะแนน)</label>
+      <label><input type="radio" name="q2" value="1">ไม่ทราบ (1 คะแนน)</label>
+      <label><input type="radio" name="q2" value="2">ลด 1–3 กก. (2 คะแนน)</label>
+      <label><input type="radio" name="q2" value="3">น้ำหนักไม่ลดลง (3 คะแนน)</label>
+    </div>
+
+    <div class="question">
+      <p><strong>3. ความสามารถเคลื่อนไหว:</strong></p>
+      <label><input type="radio" name="q3" value="0">นอนติดเตียงหรือใช้รถเข็น (0 คะแนน)</label>
+      <label><input type="radio" name="q3" value="1">ลุกเดินได้ภายในบ้าน (1 คะแนน)</label>
+      <label><input type="radio" name="q3" value="2">เดินได้ตามปกติ (2 คะแนน)</label>
+    </div>
+
+    <div class="question">
+      <p><strong>4. ในช่วง 3 เดือนที่ผ่านมา:</strong> มีภาวะเครียดรุนแรงหรือเจ็บป่วยเฉียบพลันหรือไม่</p>
+      <label><input type="radio" name="q4" value="0">ใช่ (0 คะแนน)</label>
+      <label><input type="radio" name="q4" value="2">ไม่ใช่ (2 คะแนน)</label>
+    </div>
+
+    <div class="question">
+      <p><strong>5. ปัญหาทางจิตใจ / ความจำ:</strong></p>
+      <label><input type="radio" name="q5" value="0">ความจำเสื่อม/ซึมเศร้า (0 คะแนน)</label>
+      <label><input type="radio" name="q5" value="1">ความจำเสื่อมเล็กน้อย (1 คะแนน)</label>
+      <label><input type="radio" name="q5" value="2">ไม่มีปัญหา (2 คะแนน)</label>
+    </div>
+
+    <div class="question">
+      <p><strong>6. BMI หรือเส้นรอบน่อง (CC):</strong></p>
+      <label><input type="radio" name="q6" value="0">BMI < 19 หรือ CC < 31 ซม. (0 คะแนน)</label>
+      <label><input type="radio" name="q6" value="1">BMI 19–21 หรือ CC 31–33 ซม. (1 คะแนน)</label>
+      <label><input type="radio" name="q6" value="2">BMI 21–23 (2 คะแนน)</label>
+      <label><input type="radio" name="q6" value="3">BMI ≥ 23 (3 คะแนน)</label>
+    </div>
+
+    <button type="button" onclick="calculateMNA()">คำนวณผล</button>
+  </form>
+
+  <!-- result moved to popup -->
+
+  <script>
+    // modal
+    function openModal() {
+      document.getElementById("modalOverlay").style.display = "block";
+    }
+    function closeModal() {
+      document.getElementById("modalOverlay").style.display = "none";
+    }
+
+    // calculate
+    function calculateMNA() {
+      let total = 0;
+      const form = document.forms["mnaForm"];
+
+      for (let i = 1; i <= 6; i++) {
+        const selected = form["q" + i].value;
+        if (!selected) {
+          alert("กรุณาตอบคำถามให้ครบทุกข้อ");
+          return;
+        }
+        total += Number(selected);
+      }
+
+      let conclusion = "";
+      if (total <= 7) conclusion = "ภาวะทุพโภชนาการ";
+      else if (total <= 11) conclusion = "เสี่ยงต่อภาวะทุพโภชนาการ";
+      else conclusion = "ภาวะโภชนาการปกติ";
+
+      alert(`คะแนนรวม: ${total} → ${conclusion}`);
+    }
+  </script>
+
+  
+<!-- Result Modal -->
+<div id="resultModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999;">
+  <div style="background:white; width:85%; max-width:350px; margin:120px auto; padding:20px; border-radius:12px; text-align:center; font-size:20px;">
+    <div id="resultText"></div>
+    <button onclick="document.getElementById('resultModal').style.display='none'" style="margin-top:15px; font-size:18px; padding:10px 20px; border-radius:8px;">ปิด</button>
+  </div>
+</div>
+
+<script>
+  // replace result output with popup
+  function calculateMNA() {
+    let total = 0;
+    const form = document.forms["mnaForm"];
+
+    for (let i = 1; i <= 6; i++) {
+      const selected = form["q" + i].value;
+      if (!selected) {
+        alert("กรุณาตอบคำถามให้ครบทุกข้อ");
+        return;
+      }
+      total += Number(selected);
+    }
+
+    let conclusion = "";
+    if (total <= 7) conclusion = "ภาวะทุพโภชนาการ";
+    else if (total <= 11) conclusion = "เสี่ยงต่อภาวะทุพโภชนาการ";
+    else conclusion = "ภาวะโภชนาการปกติ";
+
+    document.getElementById("resultText").innerHTML = `คะแนนรวม: <strong>${total}</strong><br>${conclusion}`;
+    document.getElementById("resultModal").style.display = "block";
+  }
+</script>
+
+</body>
+</html>
